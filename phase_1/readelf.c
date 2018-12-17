@@ -5,7 +5,7 @@
 int main(){
 	char c;
 	int i = 0;
-	int tab[7];
+	int tab[200];
 	FILE *ptr = malloc(sizeof(FILE));
 	ptr = fopen("/home/s/salamanl/projet/elf_linker-1.0/Examples_loader/example1.o","r");
 	if (ptr==NULL){
@@ -13,9 +13,10 @@ int main(){
 	}
 	while (!feof(ptr)){
 		c = fgetc(ptr);
-		if (c == '\0'){
+		if (c == '\0' && i>10){
 			break;
 		}
+		printf("0x%x ",c);
 		tab[i] = c;
 		i++;
 	}
@@ -54,6 +55,7 @@ int main(){
 	printf("\n");
 	printf("version : %d",tab[6]);
 	printf("\n");
+	printf("7 : 0x%x",tab[7]);
 
 	return 0;
 }
