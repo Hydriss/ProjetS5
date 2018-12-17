@@ -3,9 +3,9 @@
 #include <string.h>
 
 int main(){
-	int i,j;
-	char strH[120];
 	char c;
+	int i = 0;
+	int tab[7];
 	FILE *ptr = malloc(sizeof(FILE));
 	ptr = fopen("/home/s/salamanl/projet/elf_linker-1.0/Examples_loader/example1.o","r");
 	if (ptr==NULL){
@@ -16,22 +16,44 @@ int main(){
 		if (c == '\0'){
 			break;
 		}
-		printf("0x%x ",c);
+		tab[i] = c;
+		i++;
 	}
-	/*char l[120];
-	if(fgets(l,120,ptr)!= NULL){
-			/*set strH with nulls
-	    memset(strH,0,sizeof(strH));
+	printf("identification : 0x%x",tab[0]);
+	for(i = 1; i <=3;i++){
+		printf("%c",tab[i]);
+	}
+	printf("\nclass : ");
+	switch (tab[4]) {
+		case 0:
+			printf("ClassNONE");
+			break;
+		case 1:
+			printf("Class32");
+			break;
+		case 2:
+			printf("Class64");
+			break;
+		default :
+			printf("invalid");
+	}
+	printf("\ndata : ");
+	switch (tab[5]) {
+		case 0:
+			printf("dataNONE");
+			break;
+		case 1:
+			printf("dataLSB");
+			break;
+		case 2:
+			printf("dataMSB");
+			break;
+		default :
+			printf("invalid");
+	}
+	printf("\n");
+	printf("version : %d",tab[6]);
+	printf("\n");
 
-	    /*converting str character into Hex and adding into strH
-	    for(i=0,j=0;i<strlen(l);i++,j+=2)
-	    {
-	        sprintf((char*)strH+j,"%02X",l[i]);
-	    }
-	    strH[j]='\0'; /*adding NULL in the end
-		printf("ELF Header \n");
-	    printf("Magic : %s\n",strH);
-		printf("%s \n",l);
-	}*/
-	fclose(ptr);
+	return 0;
 }
