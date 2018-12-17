@@ -16,7 +16,7 @@ int main(){
 		if (c == '\0'){
 			break;
 		}
-		printf("0x%x ",c);
+		printf("%x ",c);
 	}
 	/*char l[120];
 	if(fgets(l,120,ptr)!= NULL){
