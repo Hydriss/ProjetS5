@@ -12,12 +12,13 @@ int main(){
 	}
 	while (!feof(ptr)){
 		c = fgetc(ptr);
-		if (c == '\0'){
+		/*if (c == '\0'){
 			break;
-		}
+		}*/
 		sprintf(str,"%x",c);
 		printf("%x ",c);
 	}
+	printf("test \n");
 	printf("%s",str);
 	fclose(ptr);
 }
