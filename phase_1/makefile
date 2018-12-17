@@ -2,7 +2,7 @@ CC = gcc
 FLAGS = -Wall -Werror
 
 readelf : readelf.o
-	$(CC) $(FLAGS) -o readelf.o
+	$(CC) $(FLAGS) -o readefl readelf.o
 
 readelf.o : readelf.c
-	$(CC) $(FLAGS) readelf.c
+	$(CC) $(FLAGS) -c readelf.c
