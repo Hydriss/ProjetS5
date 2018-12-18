@@ -16,7 +16,7 @@ int lireFichier(int * tab, FILE * ptr, int * taille){
 				return 1;
 			}
 		}
-		printf("%d : %d \n",i,c);
+		printf("%x ",c);
 		tab[i] = c;
 		i++;
 	}
@@ -337,15 +337,15 @@ void afficherSection(int * tab){
 		entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		i += 4;
-		//printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %d\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
-		printf("%d:\n",j);
-		afficherEnTeteSection(nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+		printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %x\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+		//printf("%d:\n",j);
+		//afficherEnTeteSection(nom,type,flags,adresse,off,size,link,info,addralign,entsize);
 
 	}
 
 }
 void afficherDetailSection(int * tab, int section){
-	int nom;
+	/*int nom;
 	int j;
 	int debut_section;
 	int i;
@@ -356,7 +356,7 @@ void afficherDetailSection(int * tab, int section){
 	nom = ((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
 	i = debut_section;
 
-	printf("Vidange hexadecimal de la section \"%d\" : \n",nom );
+	printf("Vidange hexadecimal de la section \"%d\" : \n",nom );*/
 
 	/* Tant que i ne vaut pas fin section on lit toute la section en hexa  */
 
@@ -366,17 +366,19 @@ void afficherDetailSection(int * tab, int section){
 int main(int argc, char * argv[]){
 	int taille = 2000;
 	int * tab;
+	int section;
 	if(argc < 3){
 		printf("il manque un nom de fichier");
 	}
 	char * file = NULL;
 
-	if(argv[1][1] != 'x'){
+	if(argv[1][0] == '-' && argv[1][1] != 'x'){
 		file = argv[2];
 	}
 	else{
 		file = argv[3];
-		int section = atoi(argv[2]);
+		section = atoi(argv[2]);
+		printf("\n--------------%d\n",section);
 	}
 
 	FILE *ptr = malloc(sizeof(FILE));
@@ -402,6 +404,7 @@ int main(int argc, char * argv[]){
 				break;
 			case 'x':
 				afficherDetailSection(tab,section);
+				break;
 			default :
 				afficherEntete(tab);
 				afficherSection(tab);
