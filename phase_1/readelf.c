@@ -235,6 +235,59 @@ void afficherSection(int * tab){
 }
 
 void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
+	switch (type) {
+		case  0 :
+			printf("NULL");
+			break;
+		case  1 :
+			printf("PROGBITS" );
+			break;
+		case  2:
+			printf("SYMTAB");
+			break;
+		case  3 :
+			printf("STRTAB");
+			break;
+		case  4 :
+			printf("RELA" );
+			break;
+		case  5 :
+			printf("HASH");
+			break;
+		case  6 :
+			printf("DYNAMIC" );
+			break;
+		case  7 :
+			printf("NOTE");
+			break;
+		case  8 :
+			printf("NOBITS" );
+			break;
+		case  9:
+			printf("REL");
+			break;
+		case  10 :
+			printf("SHLIB" );
+			break;
+		case  11 :
+			printf("DYNSYM" );
+			break;
+		case  0x70000000 :
+			printf("LOPROC");
+			break;
+		case   0x7fffffff  :
+			printf("HIPROC" );
+			break;
+		case  0x80000000:
+			printf("LOUSER" );
+			break;
+		case  0xffffffff :
+			printf("HIUSER" );
+			break;
+		default :
+			printf("type inconnu" );
+
+	}
 
 }
 
