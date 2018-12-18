@@ -16,7 +16,7 @@ int lireFichier(int * tab, FILE * ptr, int * taille){
 				return 1;
 			}
 		}
-		printf("%d : %x \n",i,c);
+		printf(/*"%d : %c\t */"%x",/*i,c,*/c);
 		tab[i] = c;
 		i++;
 	}
@@ -306,7 +306,7 @@ void afficherSection(int * tab){
 
 	int i = offsetsec;
 	int j;
-	int nom = tab[i];
+	int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 	int type;
 	int flags;
 	int adresse;
@@ -325,6 +325,7 @@ void afficherSection(int * tab){
 		i += 4;
 		adresse= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
+		printf("\n%d\n",i);
 		off= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		size= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -338,27 +339,78 @@ void afficherSection(int * tab){
 		entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		i += 4;
-		printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %x\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
-		//printf("%d:\n",j);
-		//afficherEnTeteSection(nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+		//printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %x\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+		printf("%d:\n",j);
+		afficherEnTeteSection(nom,type,flags,adresse,off,size,link,info,addralign,entsize);
 
 
 	}
 
 }
+
+
+
 void afficherDetailSection(int * tab, int section){
-	/*int nom;
+	int nom;
 	int j;
 	int debut_section;
 	int i;
 	int fin_section;
+	int size;
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 
 	j = offsetsec;
+	j += section * 40;
 	nom = ((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
+	j += 16;
+	printf("\n-------%d\n",j);
+	debut_section=((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
+	j +=4;
+	size=((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
 	i = debut_section;
+	fin_section=size+debut_section;
+	printf("\n%d %d\n",size,debut_section);
 
-	printf("Vidange hexadecimal de la section \"%d\" : \n",nom );*/
+	printf("Vidange hexadecimal de la section \"%d\" : \n",nom);
+
+	while(i<fin_section){
+
+		tab[i] = tab[i]&0x000000ff;
+
+		printf("%2X",tab[i]);
+		i++;
+	}
+
+}
+
+void afficherSymbole(int * tab){
+	/*int nb_entree;
+	int debut_symtab;
+	int fin_symtab;
+	int i;
+	int valeur;
+	int tail;
+	int type;
+	int lien;
+	int vis;
+	int ndx;
+	int nom;
+	debut_symtab=
+	i=debut_symtab;
+	while(i<fin_symtab){
+		valeur=
+		tail=
+		type=
+		lien=
+		vis=
+		ndx=
+		nom=
+		i++;
+	}
+
+
+	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);*/
+
 
 
 
@@ -405,6 +457,9 @@ int main(int argc, char * argv[]){
 				break;
 			case 'x':
 				afficherDetailSection(tab,section);
+				break;
+			case 's':
+				afficherSymbole(tab);
 				break;
 			default :
 				afficherEntete(tab);
