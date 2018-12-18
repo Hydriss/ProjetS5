@@ -235,7 +235,38 @@ void afficherSection(int * tab){
 }
 
 void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
-
+	switch (flags) {
+		case 0x1:
+			printf("WRITE");
+		case 0x2:
+			printf("ALLOC");
+		case 0x4:
+			printf("EXECINSTR");
+		case 0x10:
+			printf("MERGE");
+		case 0x20:
+			printf("STRINGS");
+		case 0x40:
+			printf("INFO_LINK");
+		case 0x80:
+			printf("LINK_ORDER");
+		case 0x100:
+			printf("OS_NONCONFORMING");
+		case 0x200:
+			printf("GROUP");
+		case 0x400:
+			printf("TLS");
+		case 0x0ff00000:
+			printf("MASKOS");
+		case 0xf0000000:
+			printf("MASKPROC");
+		case 0x40000000:
+			printf("ORDERED");
+		case 0x80000000:
+			printf("EXCLUDE");
+		default:
+			printf("?????");
+	}
 }
 
 int main(int argc, char * argv[]){
