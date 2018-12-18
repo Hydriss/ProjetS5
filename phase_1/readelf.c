@@ -406,11 +406,8 @@ void afficherSection(int * tab){
 	}
 
 }
-
-
-
-/*void afficherDetailSection(int * tab, int section){
-	int nom;
+void afficherDetailSection(int * tab, int section){
+	/*int nom;
 	int j;
 	int debut_section;
 	int i;
@@ -421,26 +418,28 @@ void afficherSection(int * tab){
 	nom = ((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
 	i = debut_section;
 
-	printf("Vidange hexadecimal de la section \"%d\" : \n",nom );
+	printf("Vidange hexadecimal de la section \"%d\" : \n",nom );*/
 
 
 
-}*/
+}
 
 int main(int argc, char * argv[]){
 	int taille = 2000;
 	int * tab;
+	int section;
 	if(argc < 3){
 		printf("il manque un nom de fichier");
 	}
 	char * file = NULL;
 
-	if(argv[1][1] != 'x'){
+	if(argv[1][0] == '-' && argv[1][1] != 'x'){
 		file = argv[2];
 	}
 	else{
 		file = argv[3];
-		//int section = atoi(argv[2]);
+		section = atoi(argv[2]);
+		printf("\n--------------%d\n",section);
 	}
 
 	FILE *ptr = malloc(sizeof(FILE));
@@ -464,8 +463,9 @@ int main(int argc, char * argv[]){
 			case 'S' :
 				afficherSection(tab);
 				break;
-			/*case 'x':
-				afficherDetailSection(tab,section);*/
+			case 'x':
+				afficherDetailSection(tab,section);
+				break;
 			default :
 				afficherEntete(tab);
 				afficherSection(tab);
