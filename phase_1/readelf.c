@@ -191,57 +191,6 @@ void afficherEntete(int * tab){
 	printf("table d'index des chaines d'entete de sections : %d\n",((tab[50] << 0) + (tab[51] << 8)));
 }
 
-<<<<<<< HEAD
-void afficherSection(int * tab){
-	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
-	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
-	printf("\n%d",offsetsec);
-	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
-
-	int i = offsetsec;
-	int j;
-	int nom = 0;
-	int type;
-	int flags;
-	int adresse;
-	int off;
-	int size;
-	int link;
-	int info;
-	int addralign;
-	int entsize;
-	i +=4;
-	for(j=0;j<nbEnTete;j++){
-		type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		printf("i : %d %x %x %x %x\n",i,tab[i],tab[i+1],tab[i+2],tab[i+3]);
-		i += 4;
-		flags= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		adresse= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		off= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		size= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		link= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		info= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		addralign= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
-		i += 4;
-
-		printf("%d : \n\t -nom: %d\n\t -type: %x\n\t -flags: %x\n\t -adresse: %x\n\t -off: %x\n\t -size: %x\n\t -link: %x\n\t -info: %x\n\t -addralign: %x\n\t -entsize: %x\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
-		printf("%d\n",i);
-
-	}
-
-}
-
-=======
->>>>>>> a0af3e18cc675f986928e62e5c067f6e37919bf1
 void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
 	printf("\t-nom : %d\n",nom);
 	printf("\t-type : ");
@@ -345,17 +294,19 @@ void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int si
 			printf("?????");
 	}
 	printf("\n");
-	printf("\t-adresse: %x\n\t-off: %d\n\t-size: %d\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
+	printf("\t-adresse: %x\n\t-off: %x\n\t-size: %x\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
 }
+
 
 void afficherSection(int * tab){
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	printf("\n%d",offsetsec);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 
 	int i = offsetsec;
 	int j;
-	int nom;
+	int nom = tab[i];
 	int type;
 	int flags;
 	int adresse;
@@ -365,11 +316,10 @@ void afficherSection(int * tab){
 	int info;
 	int addralign;
 	int entsize;
-
+	i +=4;
 	for(j=0;j<nbEnTete;j++){
-		nom= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
 		type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		printf("i : %d %x %x %x %x\n",i,tab[i],tab[i+1],tab[i+2],tab[i+3]);
 		i += 4;
 		flags= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
@@ -388,14 +338,20 @@ void afficherSection(int * tab){
 		entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		i += 4;
-		//printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %d\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+
+		printf("%d : \n\t -nom: %d\n\t -type: %x\n\t -flags: %x\n\t -adresse: %x\n\t -off: %x\n\t -size: %x\n\t -link: %x\n\t -info: %x\n\t -addralign: %x\n\t -entsize: %x\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
 		printf("%d:\n",j);
+
 		afficherEnTeteSection(nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+
 
 	}
 
 }
-void afficherDetailSection(int * tab, int section){
+
+
+
+/*void afficherDetailSection(int * tab, int section){
 	int nom;
 	int j;
 	int debut_section;
@@ -409,10 +365,9 @@ void afficherDetailSection(int * tab, int section){
 
 	printf("Vidange hexadecimal de la section \"%d\" : \n",nom );
 
-	/* Tant que i ne vaut pas fin section on lit toute la section en hexa  */
 
 
-}
+}*/
 
 int main(int argc, char * argv[]){
 	int taille = 2000;
@@ -427,7 +382,7 @@ int main(int argc, char * argv[]){
 	}
 	else{
 		file = argv[3];
-		int section = atoi(argv[2]);
+		//int section = atoi(argv[2]);
 	}
 
 	FILE *ptr = malloc(sizeof(FILE));
@@ -451,8 +406,8 @@ int main(int argc, char * argv[]){
 			case 'S' :
 				afficherSection(tab);
 				break;
-			case 'x':
-				afficherDetailSection(tab,section);
+			/*case 'x':
+				afficherDetailSection(tab,section);*/
 			default :
 				afficherEntete(tab);
 				afficherSection(tab);
