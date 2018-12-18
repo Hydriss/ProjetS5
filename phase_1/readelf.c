@@ -5,7 +5,7 @@
 
 int lireFichier(int * tab, FILE * ptr, int * taille){
 	char c;
-	int i = 0;
+	unsigned int i = 0;
 	while (!feof(ptr)){
 		c = fgetc(ptr);
 		if(i >= *taille){
@@ -16,7 +16,7 @@ int lireFichier(int * tab, FILE * ptr, int * taille){
 				return 1;
 			}
 		}
-		printf("%c ",c);
+		printf("%d : %d \n",i,c);
 		tab[i] = c;
 		i++;
 	}
@@ -196,24 +196,21 @@ void afficherSection(int * tab){
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 
-	int i = offsetsec+1;
+	int i = 308;
 	int j;
-	char nom[4];
-	int type;
-	int flags;
-	int adresse;
-	int off;
-	int size;
-	int link;
-	int info;
-	int addralign;
-	int entsize;
+	unsigned int nom;
+	unsigned int type;
+	unsigned int flags;
+	unsigned int adresse;
+	unsigned int off;
+	unsigned int size;
+	unsigned int link;
+	unsigned int info;
+	unsigned int addralign;
+	unsigned int entsize;
 
 	for(j=0;j<nbEnTete;j++){
-		nom[0] = tab[i];
-		nom[1] = tab[i+1];
-		nom[2] = tab[i+2];
-		nom[3] = tab[i+3];
+		nom= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
@@ -233,7 +230,7 @@ void afficherSection(int * tab){
 		i += 4;
 		entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		printf("%d : \n\t -nom: %c%c%c%c\n\t -type: %d\n\t -flags: %d\n\t -adresse: %d\n\t -off: %d\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom[0],nom[1],nom[2],nom[3],type,flags,adresse,off,size,link,info,addralign,entsize);
+		printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %d\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
 
 	}
 
