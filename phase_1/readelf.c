@@ -2,38 +2,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(){
+
+int lireFichier(int * tab, FILE * ptr, int * taille){
 	char c;
 	int i = 0;
-	int tab[200];
-	FILE *ptr = malloc(sizeof(FILE));
-	ptr = fopen("/home/s/salamanl/projet/elf_linker-1.0/Examples_loader/example1.o","r");
-	if (ptr==NULL){
-		printf("Erreur fopen");
-	}
 	while (!feof(ptr)){
 		c = fgetc(ptr);
-		if (c == '\0' && i>200){
-			break;
+		if(i >= *taille){
+			*taille += 10;
+			tab = realloc(tab, sizeof(int)*(*taille));
+			if(tab == NULL){
+				printf("erreur de reallocation");
+				return 1;
+			}
 		}
 		printf("0x%x ",c);
 		tab[i] = c;
 		i++;
 	}
-	printf("identification : 0x%x",tab[0]);
+	return 0;
+}
+
+void afficherEntete(int * tab){
+	int i;
+	printf("\nclass : ");
 	for(i = 1; i <=3;i++){
 		printf("%c",tab[i]);
 	}
-	printf("\nclass : ");
 	switch (tab[4]) {
 		case 0:
-			printf("ClassNONE");
+			printf("NONE");
 			break;
 		case 1:
-			printf("Class32");
+			printf("32");
 			break;
 		case 2:
-			printf("Class64");
+			printf("64");
 			break;
 		default :
 			printf("invalid");
@@ -185,6 +189,29 @@ int main(){
 	printf("taille des entetes de sections : %d\n",((tab[46] << 0) + (tab[47] << 8)));
 	printf("nombres d'entetes de sections : %d\n",((tab[48] << 0) + (tab[49] << 8)));
 	printf("table d'index des chaines d'entete de sections : %d\n",((tab[50] << 0) + (tab[51] << 8)));
+}
 
+
+int main(int argc, char * argv[]){
+	int taille = 200;
+	int * tab;
+	if(argc < 2){
+		printf("il manque un nom de fichier");
+	}
+	char * file = argv[1];
+	FILE *ptr = malloc(sizeof(FILE));
+	ptr = fopen(file,"r");
+	if (ptr==NULL){
+		printf("Erreur fopen");
+		return -1;
+	}
+
+	tab = malloc(sizeof(int)*(taille));
+	if(lireFichier(tab,ptr, &taille)){
+		return -1;
+	}
+	afficherEntete(tab);
+
+	fclose(ptr);
 	return 0;
 }
