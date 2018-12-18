@@ -16,11 +16,7 @@ int lireFichier(int * tab, FILE * ptr, int * taille){
 				return 1;
 			}
 		}
-<<<<<<< HEAD
-		printf("%x ",c);
-=======
 		printf("%d : %x \n",i,c);
->>>>>>> 26323b6649f25e375223a5a09db6b47a92b7a371
 		tab[i] = c;
 		i++;
 	}
