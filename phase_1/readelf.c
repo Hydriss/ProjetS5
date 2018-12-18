@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct {
+	char * nom;
+	int type;
+	int flags;
+	int adresse;
+	int off;
+	int size;
+	int link;
+	int info;
+	int addralign;
+	int entsize;
+}sh;
 
 int lireFichier(int * tab, FILE * ptr, int * taille){
 	char c;
@@ -191,8 +203,8 @@ void afficherEntete(int * tab){
 	printf("table d'index des chaines d'entete de sections : %d\n",((tab[50] << 0) + (tab[51] << 8)));
 }
 
-void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
-	printf("\t-nom : %d\n",nom);
+void afficherEnTeteSection(char *nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
+	printf("\t-nom : %s\n",nom);
 	printf("\t-type : ");
 	switch (type) {
 		case  0 :
@@ -297,16 +309,50 @@ void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int si
 	printf("\t-adresse: %x\n\t-off: %x\n\t-size: %x\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
 }
 
+char ** getnom(sh *sheader,int offset,int taille,int * tab,int nbEnTete){
+	char ** noms;
+	int nbLettre[nbEnTete];
+	int numMot = 0;
+	for(int i = 0; i < nbEnTete;i++){
+		nbLettre[i] = 0;
+	}
+ 	for(int i=0; i<taille;i++){
+		if (tab[offset+i]==0){
+			numMot++;
+		} else {
+			nbLettre[numMot]++;
+		}
+	}
+	noms = malloc(sizeof(char*)*nbEnTete);
+	for(int i = 0; i < nbEnTete; i++){
+		noms[i] = malloc(sizeof(char)*nbLettre[i]);
+	}
+
+	numMot = 0;
+	int numLettre = 0;
+	for(int i=0; i<taille;i++){
+		if (tab[offset+i]==0){
+			numMot++;
+			numLettre=0;
+		} else {
+			noms[numMot][numLettre] = tab[offset+i];
+			numLettre++;
+		}
+	}
+	return noms;
+}
 
 void afficherSection(int * tab){
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
-	printf("\n%d",offsetsec);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+	//printf("\n%d",offsetsec);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 
 	int i = offsetsec;
 	int j;
-	int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+	/*int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+	printf("Nom : %x \n",nom);
 	int type;
 	int flags;
 	int adresse;
@@ -315,33 +361,46 @@ void afficherSection(int * tab){
 	int link;
 	int info;
 	int addralign;
-	int entsize;
+	int entsize;*/
+
+	sh sheader;
 	i +=4;
 	for(j=0;j<nbEnTete;j++){
-		type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		printf("i : %d %x %x %x %x\n",i,tab[i],tab[i+1],tab[i+2],tab[i+3]);
+		sheader.type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		//printf("i : %d %x %x %x %x\n",i,tab[i],tab[i+1],tab[i+2],tab[i+3]);
 		i += 4;
-		flags= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.flags= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		adresse= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.adresse= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		printf("\n%d\n",i);
-		off= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.off= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		size= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.size= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		link= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.link= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		info= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.info= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		addralign= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.addralign= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
-		entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		sheader.entsize= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		i += 4;
-		//printf("%d : \n\t -nom: %d\n\t -type: %d\n\t -flags: %d\n\t -adresse: %x\n\t -off: %x\n\t -size: %d\n\t -link: %d\n\t -info: %d\n\t -addralign: %d\n\t -entsize: %d\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+
+		if (j==e_shstrndx){
+			/*sheader.off = (sheader.off << 24);
+			sheader.off = (sheader.off >> 24);//>> 24);*/
+			sheader.off -= 0xffffff00;
+			char ** noms = getnom(&sheader,sheader.off,sheader.size,tab,nbEnTete);
+			for(int k = 0; k < nbEnTete; k++){
+				printf("%s\n", noms[k]);
+			}
+		}
+
+		//printf("%d : \n\t -nom: %d\n\t -type: %x\n\t -flags: %x\n\t -adresse: %x\n\t -off: %x\n\t -size: %x\n\t -link: %x\n\t -info: %x\n\t -addralign: %x\n\t -entsize: %x\n",j,nom,type,flags,adresse,off,size,link,info,addralign,entsize);
 		printf("%d:\n",j);
-		afficherEnTeteSection(nom,type,flags,adresse,off,size,link,info,addralign,entsize);
+
+		afficherEnTeteSection(sheader.nom,sheader.type,sheader.flags,sheader.adresse,sheader.off,sheader.size,sheader.link,sheader.info,sheader.addralign,sheader.entsize);
 
 
 	}
