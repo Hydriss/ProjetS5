@@ -198,16 +198,16 @@ void afficherSection(int * tab){
 
 	int i = 308;
 	int j;
-	unsigned int nom;
-	unsigned int type;
-	unsigned int flags;
-	unsigned int adresse;
-	unsigned int off;
-	unsigned int size;
-	unsigned int link;
-	unsigned int info;
-	unsigned int addralign;
-	unsigned int entsize;
+	int nom;
+	int type;
+	int flags;
+	int adresse;
+	int off;
+	int size;
+	int link;
+	int info;
+	int addralign;
+	int entsize;
 
 	for(j=0;j<nbEnTete;j++){
 		nom= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -234,9 +234,10 @@ void afficherSection(int * tab){
 
 	}
 
+}
 
-
-
+void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
+	
 }
 
 int main(int argc, char * argv[]){
