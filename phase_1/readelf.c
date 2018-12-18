@@ -287,38 +287,51 @@ void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int si
 			break;
 		default :
 			printf("type inconnu" );
-
 	}
 
 	switch (flags) {
 		case 0x1:
 			printf("WRITE");
+			break;
 		case 0x2:
 			printf("ALLOC");
+			break;
 		case 0x4:
 			printf("EXECINSTR");
+			break;
 		case 0x10:
 			printf("MERGE");
+			break;
 		case 0x20:
 			printf("STRINGS");
+			break;
 		case 0x40:
 			printf("INFO_LINK");
+			break;
 		case 0x80:
 			printf("LINK_ORDER");
+			break;
 		case 0x100:
 			printf("OS_NONCONFORMING");
+			break;
 		case 0x200:
 			printf("GROUP");
+			break;
 		case 0x400:
 			printf("TLS");
+			break;
 		case 0x0ff00000:
 			printf("MASKOS");
+			break;
 		case 0xf0000000:
 			printf("MASKPROC");
+			break;
 		case 0x40000000:
 			printf("ORDERED");
+			break;
 		case 0x80000000:
 			printf("EXCLUDE");
+			break;
 		default:
 			printf("?????");
 	}
