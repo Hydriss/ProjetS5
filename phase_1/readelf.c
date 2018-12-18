@@ -196,7 +196,7 @@ void afficherSection(int * tab){
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 
-	int i = 308;
+	int i = offsetsec;
 	int j;
 	int nom;
 	int type;
@@ -210,8 +210,6 @@ void afficherSection(int * tab){
 	int entsize;
 
 	for(j=0;j<nbEnTete;j++){
-		nom= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		i += 4;
 		type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
 		flags= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -237,7 +235,7 @@ void afficherSection(int * tab){
 }
 
 void afficherEnTeteSection(int nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
-	
+
 }
 
 int main(int argc, char * argv[]){
