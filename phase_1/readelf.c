@@ -407,7 +407,7 @@ void afficherSection(int * tab){
 	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
 	//printf("\n%d",offsetsec);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
-
+}
 void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_shstrndx){int i = offsetsec;
 	int j;
 	/*int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
