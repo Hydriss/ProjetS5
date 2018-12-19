@@ -414,7 +414,6 @@ int getNumSection(char * para, sh * sheader, int nbEnTete){
 }
 
 void afficherDetailSection(int * tab, char * para){
-	int j;
 	int debut_section;
 	int i;
 	int fin_section;
@@ -426,15 +425,11 @@ void afficherDetailSection(int * tab, char * para){
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	int section = getNumSection(para, sheader, nbEnTete);
-	j = offsetsec;
-	j += section * 40;
-	j += 16;
-	printf("\n-------%d\n",j);
-	debut_section= sheader[section].off;
-	j +=4;
-	size=sheader[section].size;
+	debut_section= 0x000000ff & sheader[section].off;
+	size= 0x000000ff & sheader[section].size;
 	i = debut_section;
 	fin_section=size+debut_section;
+	printf("-> %8x %8x",debut_section,size);
 
 	printf("Vidange hexadecimal de la section \"%s\" : \n",sheader[section].nom);
 	int tailleRes = (fin_section-i)*2+2;
@@ -444,6 +439,7 @@ void afficherDetailSection(int * tab, char * para){
 		char * tmp = malloc(sizeof(char)*2);
 		sprintf(tmp,"%2X",tab[i]);
 		res = strcat(res,tmp);
+		//printf("%s",res);
 		i++;
 	}
 	for(i = 0; i < tailleRes; i++){
@@ -460,8 +456,58 @@ void afficherDetailSection(int * tab, char * para){
 	printf("\n");
 }
 
+char * getSymboleType(int type){
+	switch (type) {
+		case 0:
+					return("NOTYPE");
+					break;
+		case 1:
+					return("OBJECT");
+					break;
+		case 2:
+					return("FUNC");
+					break;
+		case 3:
+					return("SECTION");
+					break;
+		case 4:
+					return("FILE");
+					break;
+		case 13:
+					return("LOPROC");
+					break;
+		case 15:
+					return("HIPROC");
+					break;
+		default:
+					return("NOTYPE");
+	};
+}
+
+char * getSymboleLien(int lien){
+	switch (lien) {
+		case 0:
+					return("LOCAL");
+					break;
+		case 1:
+					return("GLOBAL");
+					break;
+		case 2:
+					return("WEAK");
+					break;
+		case 13:
+					return("LOPROC");
+					break;
+		case 15:
+					return("HIPROC");
+					break;
+		default:
+					return("lien non defini");
+	};
+}
+
 void afficherSymbole(int * tab){
-	/*int nb_entree;
+	int nb_entree;
 	int debut_symtab;
 	int fin_symtab;
 	int i;
@@ -469,9 +515,11 @@ void afficherSymbole(int * tab){
 	int tail;
 	int type;
 	int lien;
-	int vis;
+	//int vis;
 	int ndx;
-	int nom;
+	int idNom;
+	int strTabId;
+	int offsetNom;
 
 
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
@@ -479,37 +527,53 @@ void afficherSymbole(int * tab){
 	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
 
 	sh sheader[nbEnTete];
-	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx)
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	int section;
-	for(int j = 0; j < nbEnTete; i++){
-		if(strcmp(sheader[j].nom,".symtab")){
-			section = i;
-			break;
+	for(int j = 0; j < nbEnTete; j++){
+		if(!strcmp(sheader[j].nom,".symtab")){
+			section = j;
+		}
+		if(!strcmp(sheader[j].nom,".strtab")){
+			strTabId = j;
 		}
 	}
-
-	debut_symtab=sheader[section].off;
+	offsetNom = sheader[strTabId].off & 0x000000ff;
+	printf("%d\n",section);
+	debut_symtab=sheader[section].off & 0x000000ff;
 	i=debut_symtab;
-	int size=sheader[section].size;
+	int size=sheader[section].size & 0x000000ff;
 	fin_symtab=size+debut_symtab;
-
+	printf("-> %d %d\n",debut_symtab,size);
 	while(i<fin_symtab){
-		valeur=
-		tail=
-		type=
-		lien=
-		vis=
-		ndx=
-		nom=
-		i++;
+		printf("\n%d : \n",i);
+		idNom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		char * nom = getnom(offsetNom,idNom,tab);
+		printf("\tnom : \t\t%s",nom);
+		i += 4;
+		valeur = (tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24);
+		printf("\n\tvaleur : \t%x",valeur);
+		i += 4;
+		tail = (tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24);
+		printf("\n\ttail : \t\t%d",tail);
+		i +=4;
+		type = tab[i] & 0x0F;
+		//i +=1;
+		printf("\n\ttype : \t\t%s %d",getSymboleType(type),type);
+		lien = (tab[i] & 0xF0)>>4;
+		i +=2;
+		printf("\n\tlien : \t\t%s %d",getSymboleLien(lien),lien);
+		ndx = tab[i];
+		printf("\n\tndx : \t\t%d",ndx);
+		i +=1;
+		printf("\n\tvis : \t\tDEFAULT %d",tab[i]);
+		printf("\n%2x%2x%2x%2x",tab[i-3],tab[i-2],tab[i-1],tab[i]);
+		//vis = tab[i];
+		i +=1;
 	}
+	printf("\n");
 
-
+	nb_entree = 0;
 	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);
-
-*/
-
-
 }
 
 int main(int argc, char * argv[]){
