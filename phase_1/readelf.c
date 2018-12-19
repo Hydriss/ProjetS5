@@ -193,7 +193,7 @@ void afficherEntete(int * tab){
 	printf("adresse d'entree : 0x%x\n",((tab[24] << 0) + (tab[25] << 8) + (tab[26] << 16) + (tab[27] << 24)));
 	int offsetprg = (tab[28] << 0) + (tab[29] << 8) + (tab[30] << 16) + (tab[31] << 24);
 	printf("offset des entetes de programme : %d\n",offsetprg);
-	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int offsetsec = ((tab[32] << 0)&0x000000ff) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	printf("offset des entetes de sections : %d\n",offsetsec);
 	printf("fanions : 0x%x\n",((tab[36] << 0) + (tab[37] << 8) + (tab[38] << 16) + (tab[39] << 24)));
 	printf("taille de cette entete : %d\n",((tab[40] << 0) + (tab[41] << 8)));
