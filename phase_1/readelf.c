@@ -401,13 +401,14 @@ char * readFlags(int flags) {
 	//return res
 }
 
-void afficherSection(int * tab){
+/*void afficherSection(int * tab){
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
 	//printf("\n%d",offsetsec);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
-}
+
+}*/
 void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_shstrndx){int i = offsetsec;
 	int j;
 	/*int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -460,9 +461,6 @@ void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_s
 
 	}
 	for(int k = 0; k < nbEnTete; k++){
-		//printf("nom_offset : %d\n", sheader[k].nom_off);
-		sheader[k].nom = getnom(&sheader[k],offset_Sect,sheader[k].nom_off,tab,nbEnTete);
-		printf("%d:\n",k);
 		sheader[k].nom = getnom(offset_Sect,sheader[k].nom_off,tab);
 	}
 }
