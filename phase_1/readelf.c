@@ -6,7 +6,7 @@ typedef struct {
 	char * nom;
 	int nom_off;
 	int type;
-	int flags;
+	char * flags;
 	int adresse;
 	int off;
 	int size;
@@ -204,7 +204,7 @@ void afficherEntete(int * tab){
 	printf("table d'index des chaines d'entete de sections : %d\n",((tab[50] << 0) + (tab[51] << 8)));
 }
 
-void afficherEnTeteSection(char *nom,int type,int flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
+void afficherEnTeteSection(char *nom,int type,char * flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
 	printf("\t-nom : %s\n",nom);
 	printf("\t-type : ");
 	switch (type) {
@@ -256,11 +256,14 @@ void afficherEnTeteSection(char *nom,int type,int flags,int adresse,int off,int 
 		case  0xffffffff :
 			printf("HIUSER" );
 			break;
+		case 0x70000003:
+			printf("ARM_ATTRIBUTES" );
+			break;
 		default :
 			printf("type inconnu" );
 	}
-	printf("\n\t-flags : ");
-	switch (flags) {
+	printf("\n\t-flags : %s",flags);
+	/*switch (flags) {
 		case 0x1:
 			printf("WRITE");
 			break;
@@ -305,7 +308,7 @@ void afficherEnTeteSection(char *nom,int type,int flags,int adresse,int off,int 
 			break;
 		default:
 			printf("?????");
-	}
+	}*/
 	printf("\n");
 	printf("\t-adresse: %x\n\t-off: %x\n\t-size: %x\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
 }
@@ -333,6 +336,70 @@ char * getnom(sh *sheader,int offset,int offset_nom,int * tab,int nbEnTete){
 	return nom;
 }
 
+char * readFlags(int flags) {
+	char * res = malloc(sizeof(char)*16);
+	int i = 0;
+	printf("flags (1) :%d\n",flags);
+	if((flags & 0x01) != 0){
+		res[i] = 'W';
+		printf("flags (2) :%d\n",flags);
+		i++;
+	}
+	if((flags & 0x02) != 0){
+		res[i] = 'A';
+		i++;
+	}
+	if((flags & 0x04) != 0){
+		res[i] = 'X';
+		i++;
+	}
+	if((flags & 0x10) != 0){
+		res[i] = 'M';
+		i++;
+	}
+	if((flags & 0x20) != 0){
+		res[i] = 'S';
+		i++;
+	}
+	if((flags & 0x40) != 0){
+		res[i] = 'I';
+		i++;
+	}
+	if((flags & 0x80) != 0){
+		res[i] = 'L';
+		i++;
+	}
+	if((flags & 0x100) != 0){
+		res[i] = 'O';
+		i++;
+	}
+	if((flags & 0x200) != 0){
+		res[i] = 'G';
+		i++;
+	}
+	if((flags & 0x400) != 0){
+		res[i] = 'T';
+		i++;
+	}
+	if((flags & 0x0ff00000) != 0){
+		res[i] = 'K';
+		i++;
+	}
+	if((flags & 0xf0000000) != 0){
+		res[i] = 'P';
+		i++;
+	}
+	if((flags & 0x40000000) != 0){
+		res[i] = 'D';
+		i++;
+	}
+	if((flags & 0x80000000) != 0){
+		res[i] = 'E';
+		i++;
+	}
+	return res;
+}
+
 void afficherSection(int * tab){
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
@@ -357,12 +424,13 @@ void afficherSection(int * tab){
 	for(j=0;j<nbEnTete;j++){
 		sheader[j].nom = malloc(sizeof(char)*50);
 		sheader[j].nom_off = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		printf("nom_offset : %d\n", sheader[j].nom_off);
+		//printf("nom_offset : %d\n", sheader[j].nom_off);
 		i+=4;
 		sheader[j].type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		//printf("i : %d %x %x %x %x\n",i,tab[i],tab[i+1],tab[i+2],tab[i+3]);
 		i += 4;
-		sheader[j].flags= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		printf("flags %d: %d\n",j,((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24)) );
+		sheader[j].flags= readFlags(((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24)));
 		i += 4;
 		sheader[j].adresse= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i += 4;
@@ -383,17 +451,19 @@ void afficherSection(int * tab){
 			/*sheader.off = (sheader.off << 24);
 			sheader.off = (sheader.off >> 24);//>> 24);*/
 			offset_Sect = sheader[j].off-0xffffff00;
-			printf("%x\n",offset_Sect);
+			//printf("%x\n",offset_Sect);
 		}
 		//printf("%d : \n\t -nom: %s\n\t -type: %x\n\t -flags: %x\n\t -adresse: %x\n\t -off: %x\n\t -size: %x\n\t -link: %x\n\t -info: %x\n\t -addralign: %x\n\t -entsize: %x\n",j,sheader[j].nom,sheader[j].type,sheader[j].flags,sheader[j].adresse,sheader[j].off,sheader[j].size,sheader[j].link,sheader[j].info,sheader[j].addralign,sheader[j].entsize);
-		printf("%d:\n",j);
+
 
 
 	}
 	for(int k = 0; k < nbEnTete; k++){
-		printf("nom_offset : %d\n", sheader[k].nom_off);
+		//printf("nom_offset : %d\n", sheader[k].nom_off);
 		sheader[k].nom = getnom(&sheader[k],offset_Sect,sheader[k].nom_off,tab,nbEnTete);
+		printf("%d:\n",k);
 		afficherEnTeteSection(sheader[k].nom,sheader[k].type,sheader[k].flags,sheader[k].adresse,sheader[k].off,sheader[k].size,sheader[k].link,sheader[k].info,sheader[k].addralign,sheader[k].entsize);
+
 	}
 
 }
