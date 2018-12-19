@@ -310,7 +310,7 @@ void afficherEnTeteSection(char *nom,int type,int flags,int adresse,int off,int 
 	printf("\t-adresse: %x\n\t-off: %x\n\t-size: %x\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
 }
 
-char * getnom(sh *sheader,int offset,int offset_nom,int * tab,int nbEnTete){
+char * getnom(int offset,int offset_nom,int * tab){
 	char * nom;
 	//int nbLettre[nbEnTete];
 	int offset_C = offset + offset_nom;
@@ -333,12 +333,8 @@ char * getnom(sh *sheader,int offset,int offset_nom,int * tab,int nbEnTete){
 	return nom;
 }
 
-void afficherSection(int * tab){
-	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
-	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
-	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
-	//printf("\n%d",offsetsec);
-	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
+
+void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_shstrndx){
 	int i = offsetsec;
 	int j;
 	/*int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -353,7 +349,6 @@ void afficherSection(int * tab){
 	int addralign;
 	int entsize;*/
 	int offset_Sect = 0 ;
-	sh sheader[nbEnTete];
 	for(j=0;j<nbEnTete;j++){
 		sheader[j].nom = malloc(sizeof(char)*50);
 		sheader[j].nom_off = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -391,8 +386,22 @@ void afficherSection(int * tab){
 
 	}
 	for(int k = 0; k < nbEnTete; k++){
+		sheader[k].nom = getnom(offset_Sect,sheader[k].nom_off,tab);
+	}
+}
+
+
+void afficherSection(int * tab){
+	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
+	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+	//printf("\n%d",offsetsec);
+	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
+	sh sheader[nbEnTete];
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
+
+	for(int k = 0; k < nbEnTete; k++){
 		printf("nom_offset : %d\n", sheader[k].nom_off);
-		sheader[k].nom = getnom(&sheader[k],offset_Sect,sheader[k].nom_off,tab,nbEnTete);
 		afficherEnTeteSection(sheader[k].nom,sheader[k].type,sheader[k].flags,sheader[k].adresse,sheader[k].off,sheader[k].size,sheader[k].link,sheader[k].info,sheader[k].addralign,sheader[k].entsize);
 	}
 
@@ -401,36 +410,50 @@ void afficherSection(int * tab){
 
 
 void afficherDetailSection(int * tab, int section){
-	int nom;
 	int j;
 	int debut_section;
 	int i;
 	int fin_section;
 	int size;
+	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+
+	sh sheader[nbEnTete];
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 
 	j = offsetsec;
 	j += section * 40;
-	nom = ((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
 	j += 16;
 	printf("\n-------%d\n",j);
-	debut_section=((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
+	debut_section= sheader[section].off;
 	j +=4;
-	size=((tab[j] << 0) + (tab[j+1] << 8) + (tab[j+2] << 16) + (tab[j+3] << 24));
+	size=sheader[section].size;
 	i = debut_section;
 	fin_section=size+debut_section;
-	printf("\n%d %d\n",size,debut_section);
 
-	printf("Vidange hexadecimal de la section \"%d\" : \n",nom);
-
+	printf("Vidange hexadecimal de la section \"%s\" : \n",sheader[section].nom);
+	int tailleRes = (fin_section-i)*2+2;
+	char * res = malloc(sizeof(char)*(tailleRes));
 	while(i<fin_section){
-
 		tab[i] = tab[i]&0x000000ff;
-
-		printf("%2X",tab[i]);
+		char * tmp = malloc(sizeof(char)*2);
+		sprintf(tmp,"%2X",tab[i]);
+		res = strcat(res,tmp);
 		i++;
 	}
-
+	for(i = 0; i < tailleRes; i++){
+		if(i%32 == 0){
+			printf("\n");
+		}else if(i%8 == 0){
+			printf(" ");
+		}
+		if(res[i] == ' '){
+			res[i] = '0';
+		}
+		printf("%c",res[i]);
+	}
+	printf("\n");
 }
 
 void afficherSymbole(int * tab){
