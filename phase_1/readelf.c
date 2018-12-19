@@ -263,71 +263,15 @@ void afficherEnTeteSection(char *nom,int type,char * flags,int adresse,int off,i
 			printf("type inconnu" );
 	}
 	printf("\n\t-flags : %s",flags);
-	/*switch (flags) {
-		case 0x1:
-			printf("WRITE");
-			break;
-		case 0x2:
-			printf("ALLOC");
-			break;
-		case 0x4:
-			printf("EXECINSTR");
-			break;
-		case 0x10:
-			printf("MERGE");
-			break;
-		case 0x20:
-			printf("STRINGS");
-			break;
-		case 0x40:
-			printf("INFO_LINK");
-			break;
-		case 0x80:
-			printf("LINK_ORDER");
-			break;
-		case 0x100:
-			printf("OS_NONCONFORMING");
-			break;
-		case 0x200:
-			printf("GROUP");
-			break;
-		case 0x400:
-			printf("TLS");
-			break;
-		case 0x0ff00000:
-			printf("MASKOS");
-			break;
-		case 0xf0000000:
-			printf("MASKPROC");
-			break;
-		case 0x40000000:
-			printf("ORDERED");
-			break;
-		case 0x80000000:
-			printf("EXCLUDE");
-			break;
-		default:
-			printf("?????");
-	}*/
 	printf("\n");
 	printf("\t-adresse: %x\n\t-off: %x\n\t-size: %x\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
 }
 
 char * getnom(int offset,int offset_nom,int * tab){
 	char * nom;
-	//int nbLettre[nbEnTete];
 	int offset_C = offset + offset_nom;
 
 	nom = malloc(sizeof(char)*50);
-	//int numLettre = 0;
-	/*for(int i=0; i<taille;i++){
-		if (tab[offset_C+i]==0){
-			numMot++;
-			numLettre=0;
-		} else {
-			nom[numLettre] = tab[offset_C+i];
-		}
-	}*/
 	int i=0;
 	while (tab[offset_C+i]!=0){
 		nom[i] = tab[offset_C+i];
@@ -398,38 +342,17 @@ char * readFlags(int flags) {
 		i++;
 	}
 	return res;
-	//return res
 }
 
-/*void afficherSection(int * tab){
-	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
-	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
-	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
-	//printf("\n%d",offsetsec);
-	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 
-}*/
 void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_shstrndx){int i = offsetsec;
 	int j;
-	/*int nom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-	printf("Nom : %x \n",nom);
-	int type;
-	int flags;
-	int adresse;
-	int off;
-	int size;
-	int link;
-	int info;
-	int addralign;
-	int entsize;*/
 	int offset_Sect = 0 ;
 	for(j=0;j<nbEnTete;j++){
 		sheader[j].nom = malloc(sizeof(char)*50);
 		sheader[j].nom_off = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		//printf("nom_offset : %d\n", sheader[j].nom_off);
 		i+=4;
 		sheader[j].type= ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		//printf("i : %d %x %x %x %x\n",i,tab[i],tab[i+1],tab[i+2],tab[i+3]);
 		i += 4;
 		printf("flags %d: %d\n",j,((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24)) );
 		sheader[j].flags= readFlags(((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24)));
@@ -450,13 +373,8 @@ void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_s
 		i += 4;
 
 		if (j==e_shstrndx){
-			/*sheader.off = (sheader.off << 24);
-			sheader.off = (sheader.off >> 24);//>> 24);*/
 			offset_Sect = sheader[j].off-0xffffff00;
-			//printf("%x\n",offset_Sect);
 		}
-		//printf("%d : \n\t -nom: %s\n\t -type: %x\n\t -flags: %x\n\t -adresse: %x\n\t -off: %x\n\t -size: %x\n\t -link: %x\n\t -info: %x\n\t -addralign: %x\n\t -entsize: %x\n",j,sheader[j].nom,sheader[j].type,sheader[j].flags,sheader[j].adresse,sheader[j].off,sheader[j].size,sheader[j].link,sheader[j].info,sheader[j].addralign,sheader[j].entsize);
-
 
 
 	}
@@ -470,7 +388,6 @@ void afficherSection(int * tab){
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
-	//printf("\n%d",offsetsec);
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
@@ -483,9 +400,20 @@ void afficherSection(int * tab){
 
 }
 
+int getNumSection(char * para, sh * sheader, int nbEnTete){
+	int res = atoi(para);
+	if(res == 0){
+		for(int i = 0; i < nbEnTete; i++){
+			if(!strcmp(sheader[i].nom,para)){
+				res = i;
+				break;
+			}
+		}
+	}
+	return res;
+}
 
-
-void afficherDetailSection(int * tab, int section){
+void afficherDetailSection(int * tab, char * para){
 	int j;
 	int debut_section;
 	int i;
@@ -497,7 +425,7 @@ void afficherDetailSection(int * tab, int section){
 
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
-
+	int section = getNumSection(para, sheader, nbEnTete);
 	j = offsetsec;
 	j += section * 40;
 	j += 16;
@@ -544,8 +472,27 @@ void afficherSymbole(int * tab){
 	int vis;
 	int ndx;
 	int nom;
-	debut_symtab=
+
+
+	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
+	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+
+	sh sheader[nbEnTete];
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx)
+	int section;
+	for(int j = 0; j < nbEnTete; i++){
+		if(strcmp(sheader[j].nom,".symtab")){
+			section = i;
+			break;
+		}
+	}
+
+	debut_symtab=sheader[section].off;
 	i=debut_symtab;
+	int size=sheader[section].size;
+	fin_symtab=size+debut_symtab;
+
 	while(i<fin_symtab){
 		valeur=
 		tail=
@@ -558,9 +505,9 @@ void afficherSymbole(int * tab){
 	}
 
 
-	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);*/
+	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);
 
-
+*/
 
 
 }
@@ -568,7 +515,6 @@ void afficherSymbole(int * tab){
 int main(int argc, char * argv[]){
 	int taille = 2000;
 	int * tab;
-	int section;
 	if(argc < 3){
 		printf("il manque un nom de fichier");
 	}
@@ -579,8 +525,6 @@ int main(int argc, char * argv[]){
 	}
 	else{
 		file = argv[3];
-		section = atoi(argv[2]);
-		printf("\n--------------%d\n",section);
 	}
 
 	FILE *ptr = malloc(sizeof(FILE));
@@ -605,7 +549,7 @@ int main(int argc, char * argv[]){
 				afficherSection(tab);
 				break;
 			case 'x':
-				afficherDetailSection(tab,section);
+				afficherDetailSection(tab,argv[2]);
 				break;
 			case 's':
 				afficherSymbole(tab);
