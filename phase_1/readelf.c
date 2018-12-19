@@ -460,11 +460,9 @@ void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_s
 
 	}
 	for(int k = 0; k < nbEnTete; k++){
-<<<<<<< HEAD
 		//printf("nom_offset : %d\n", sheader[k].nom_off);
 		sheader[k].nom = getnom(&sheader[k],offset_Sect,sheader[k].nom_off,tab,nbEnTete);
 		printf("%d:\n",k);
-=======
 		sheader[k].nom = getnom(offset_Sect,sheader[k].nom_off,tab);
 	}
 }
@@ -481,7 +479,6 @@ void afficherSection(int * tab){
 
 	for(int k = 0; k < nbEnTete; k++){
 		printf("nom_offset : %d\n", sheader[k].nom_off);
->>>>>>> ea30c4e781f9df5c21863f834c0b43d7a1a9e966
 		afficherEnTeteSection(sheader[k].nom,sheader[k].type,sheader[k].flags,sheader[k].adresse,sheader[k].off,sheader[k].size,sheader[k].link,sheader[k].info,sheader[k].addralign,sheader[k].entsize);
 
 	}
