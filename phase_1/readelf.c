@@ -398,6 +398,7 @@ char * readFlags(int flags) {
 		i++;
 	}
 	return res;
+	//return res
 }
 
 void afficherSection(int * tab){
