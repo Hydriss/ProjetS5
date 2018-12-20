@@ -584,6 +584,23 @@ void afficherSymbole(int * tab){
 	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);
 }
 
+
+void test(int * tab){
+	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
+	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+
+	sh sheader[nbEnTete];
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
+	int section;
+	for(int j = 0; j < nbEnTete; j++){
+		if(!strncmp(sheader[j].nom,".rel.",4) == 0){
+			section = j;
+		}
+	}
+	printf("nom : %d\n",section);
+}
+
 int main(int argc, char * argv[]){
 	int taille = 2000;
 	int * tab;
@@ -625,6 +642,9 @@ int main(int argc, char * argv[]){
 				break;
 			case 's':
 				afficherSymbole(tab);
+				break;
+			case 't' :
+				test(tab);
 				break;
 			default :
 				afficherEntete(tab);
