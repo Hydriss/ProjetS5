@@ -594,11 +594,11 @@ void test(int * tab){
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	int section;
 	for(int j = 0; j < nbEnTete; j++){
-		if(!strncmp(sheader[j].nom,".rel.",4) == 0){
+		if(strncmp(sheader[j].nom,".rel.",4) == 0){
 			section = j;
+			printf("nom : %d\n",section);
 		}
 	}
-	printf("nom : %d\n",section);
 }
 
 int main(int argc, char * argv[]){
