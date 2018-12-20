@@ -433,8 +433,8 @@ void afficherDetailSection(int * tab, char * para){
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	int section = getNumSection(para, sheader, nbEnTete);
-	debut_section= 0x000000ff & sheader[section].off;
-	size= 0x000000ff & sheader[section].size;
+	debut_section= sheader[section].off;
+	size= sheader[section].size;
 	i = debut_section;
 	fin_section=size+debut_section;
 	printf("-> %8x %8x",debut_section,size);
