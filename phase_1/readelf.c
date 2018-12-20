@@ -24,7 +24,7 @@ typedef struct {
 	int type;
 	int lien;
 	int ndx;
-} symb;
+}symb;
 
 int lireFichier(int * tab, FILE * ptr, int * taille){
 	char c;
@@ -354,9 +354,10 @@ char * readFlags(int flags) {
 }
 
 
-void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_shstrndx){int i = offsetsec;
+void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_shstrndx){
+	int i = offsetsec;
 	int j;
-	int offset_Sect = 0 ;
+	int offset_Sect = 0;
 	for(j=0;j<nbEnTete;j++){
 		sheader[j].nom = malloc(sizeof(char)*50);
 		sheader[j].nom_off = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
@@ -602,6 +603,12 @@ void test(int * tab){
 
 	int offsetSymb;
 	int info;
+	int symbo;
+	int type;
+	int strTabId;
+	int section;
+	int debut_symtab;
+	int fin_symtab;
 
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
@@ -610,6 +617,22 @@ void test(int * tab){
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	for(int j = 0; j < nbEnTete; j++){
+		if(!strcmp(sheader[j].nom,".symtab")){
+			section = j;
+		} else if(!strcmp(sheader[j].nom,".strtab")){
+			strTabId = j;
+		}
+	}
+
+	debut_symtab=sheader[section].off;
+	int size=sheader[section].size;
+	int offsetNom = sheader[strTabId].off;
+	fin_symtab=size+debut_symtab;
+
+	symb symboles[size];
+	getContenueSection(symboles, tab, offsetNom, debut_symtab, size, fin_symtab);
+
+	for(int j = 0; j < nbEnTete; j++){
 		if(strncmp(sheader[j].nom,".rel.",5) == 0){
 			printf("nom : %s\n",sheader[j].nom);
 			int debut;
@@ -617,12 +640,16 @@ void test(int * tab){
 			DetailSection(tab,sheader[j].nom,&debut,&fin);
 			int nbSymb = (fin-debut)/8;
 			for(int i = 0; i < nbSymb;i++){
+				printf("%d :\n",i);
 				int decalage = debut + i*8;
 				offsetSymb = (tab[decalage] << 0) + (tab[decalage+1] << 8) + (tab[decalage+2] << 16) + (tab[decalage+3] << 24);
 				info = (tab[decalage+4] << 0) + (tab[decalage+5] << 8) + (tab[decalage+6] << 16) + (tab[decalage+7] << 24);
-				printf("%d : \n",i);
+				symbo = info >> 8;
+				type = (unsigned char)info;
 				printf("\toffset :\t%8x\n",offsetSymb);
 				printf("\tinfo :\t\t%8x\n",info);
+				printf("\tsymb :\t\t%s\n", symboles[symbo].nom);
+				printf("\ttype :\t\t%8x\n",type);
 			}
 		}
 	}
