@@ -16,6 +16,16 @@ typedef struct {
 	int entsize;
 }sh;
 
+typedef struct {
+	int idNom;
+	char * nom;
+	int valeur;
+	int tail;
+	int type;
+	int lien;
+	int ndx;
+} symb;
+
 int lireFichier(int * tab, FILE * ptr, int * taille){
 	char c;
 	unsigned int i = 0;
@@ -507,18 +517,30 @@ char * getSymboleLien(int lien){
 	};
 }
 
+void getContenueSection(symb * symboles, int * tab, int offsetNom, int debut_symtab, int size, int fin_symtab){
+	int i = debut_symtab;
+	while(i<fin_symtab){
+		//printf("%d\n",((i - debut_symtab)/16));
+		symboles[(i-debut_symtab)/16].idNom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
+		symboles[(i-debut_symtab)/16].nom = getnom(offsetNom,symboles[(i-debut_symtab)/16].idNom,tab);
+		i += 4;
+		symboles[(i-debut_symtab)/16].valeur = (tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24);
+		i += 4;
+		symboles[(i-debut_symtab)/16].tail = (tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24);
+		i +=4;
+		symboles[(i-debut_symtab)/16].type = tab[i] & 0x0F;
+		symboles[(i-debut_symtab)/16].lien = (tab[i] & 0xF0)>>4;
+		i +=2;
+		symboles[(i-debut_symtab)/16].ndx = tab[i];
+		i +=1;
+		i +=1;
+	}
+}
+
 void afficherSymbole(int * tab){
 	int nb_entree;
 	int debut_symtab;
 	int fin_symtab;
-	int i;
-	int valeur;
-	int tail;
-	int type;
-	int lien;
-	//int vis;
-	int ndx;
-	int idNom;
 	int strTabId;
 	int offsetNom;
 
@@ -538,42 +560,27 @@ void afficherSymbole(int * tab){
 			strTabId = j;
 		}
 	}
-	offsetNom = sheader[strTabId].off & 0x000000ff;
+	offsetNom = sheader[strTabId].off;
 	printf("%d\n",section);
-	debut_symtab=sheader[section].off & 0x000000ff;
-	i=debut_symtab;
-	int size=sheader[section].size & 0x000000ff;
+	debut_symtab=sheader[section].off;
+	int size=sheader[section].size;
 	fin_symtab=size+debut_symtab;
-	printf("-> %d %d\n",debut_symtab,size);
-	while(i<fin_symtab){
+
+	symb symboles[size];
+	getContenueSection(symboles, tab, offsetNom, debut_symtab, size, fin_symtab);
+	for(int i = 0; i < (size/16); i++){
 		printf("\n%d : \n",i);
-		idNom = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
-		char * nom = getnom(offsetNom,idNom,tab);
-		printf("\tnom : \t\t%s",nom);
-		i += 4;
-		valeur = (tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24);
-		printf("\n\tvaleur : \t%x",valeur);
-		i += 4;
-		tail = (tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24);
-		printf("\n\ttail : \t\t%d",tail);
-		i +=4;
-		type = tab[i] & 0x0F;
-		//i +=1;
-		printf("\n\ttype : \t\t%s %d",getSymboleType(type),type);
-		lien = (tab[i] & 0xF0)>>4;
-		i +=2;
-		printf("\n\tlien : \t\t%s %d",getSymboleLien(lien),lien);
-		ndx = tab[i];
-		printf("\n\tndx : \t\t%d",ndx);
-		i +=1;
-		printf("\n\tvis : \t\tDEFAULT %d",tab[i]);
-		printf("\n%2x%2x%2x%2x",tab[i-3],tab[i-2],tab[i-1],tab[i]);
-		//vis = tab[i];
-		i +=1;
+		printf("\tnom : \t\t%s",symboles[i].nom);
+		printf("\n\tvaleur : \t%x",symboles[i].valeur);
+		printf("\n\ttail : \t\t%d",symboles[i].tail);
+		printf("\n\ttype : \t\t%s",getSymboleType(symboles[i].type));
+		printf("\n\tlien : \t\t%s",getSymboleLien(symboles[i].lien));
+		printf("\n\tndx : \t\t%d",symboles[i].ndx);
+		printf("\n\tvis : \t\tDEFAULT");
 	}
 	printf("\n");
 
-	nb_entree = 0;
+	nb_entree = size/16;
 	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);
 }
 
