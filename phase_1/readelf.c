@@ -506,7 +506,6 @@ char * getSymboleLien(int lien){
 					return("lien non defini");
 	};
 }
-
 void afficherSymbole(int * tab){
 	int nb_entree;
 	int debut_symtab;
@@ -618,6 +617,9 @@ int main(int argc, char * argv[]){
 				break;
 			case 's':
 				afficherSymbole(tab);
+				break;
+			case 'r':
+				afficherRelocationTable(tab);
 				break;
 			default :
 				afficherEntete(tab);
