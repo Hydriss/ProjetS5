@@ -421,6 +421,22 @@ int getNumSection(char * para, sh * sheader, int nbEnTete){
 	return res;
 }
 
+void DetailSection(int * tab, char * para, int * debut, int * fin) {
+	int debut_section;
+	int size;
+	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
+	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+
+	sh sheader[nbEnTete];
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
+	int section = getNumSection(para, sheader, nbEnTete);
+	debut_section= sheader[section].off;
+	size= sheader[section].size;
+	*debut = debut_section;
+	*fin = size+debut_section;
+}
+
 void afficherDetailSection(int * tab, char * para){
 	int debut_section;
 	int i;
@@ -441,12 +457,12 @@ void afficherDetailSection(int * tab, char * para){
 
 	printf("Vidange hexadecimal de la section \"%s\" : \n",sheader[section].nom);
 	int tailleRes = (fin_section-i)*2+2;
-	char * res = malloc(sizeof(char)*(tailleRes));
+	char * resAff = malloc(sizeof(char)*(tailleRes));
 	while(i<fin_section){
 		tab[i] = tab[i];
 		char * tmp = malloc(sizeof(char)*2);
 		sprintf(tmp,"%2X",tab[i]);
-		res = strcat(res,tmp);
+		resAff = strcat(resAff,tmp);
 		//printf("%s",res);
 		i++;
 	}
@@ -456,10 +472,10 @@ void afficherDetailSection(int * tab, char * para){
 		}else if(i%8 == 0){
 			printf(" ");
 		}
-		if(res[i] == ' '){
-			res[i] = '0';
+		if(resAff[i] == ' '){
+			resAff[i] = '0';
 		}
-		printf("%c",res[i]);
+		printf("%c",resAff[i]);
 	}
 	printf("\n");
 }
@@ -583,6 +599,10 @@ void afficherSymbole(int * tab){
 
 
 void test(int * tab){
+
+	int offsetSymb;
+	int info;
+
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
@@ -590,9 +610,34 @@ void test(int * tab){
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	for(int j = 0; j < nbEnTete; j++){
+        if(!strcmp(sheader[j].nom,".symtab")){
+            section = j;
+        } else if(!strcmp(sheader[j].nom,".strtab")){
+            strTabId = j;
+        }
+    }
+	debut_symtab=sheader[section].off;
+    int size=sheader[section].size;
+    int offsetNom = sheader[strTabId].off;
+    fin_symtab=size+debut_symtab;
+
+    symb symboles[size];
+    getContenueSection(symboles, tab, offsetNom, debut_symtab, size, fin_symtab);
+	for(int j = 0; j < nbEnTete; j++){
 		if(strncmp(sheader[j].nom,".rel.",5) == 0){
 			printf("nom : %s\n",sheader[j].nom);
-			afficherDetailSection(tab,sheader[j].nom);
+			int debut;
+			int fin;
+			DetailSection(tab,sheader[j].nom,&debut,&fin);
+			int nbSymb = (fin-debut)/8;
+			for(int i = 0; i < nbSymb;i++){
+				int decalage = debut + i*8;
+				offsetSymb = (tab[decalage] << 0) + (tab[decalage+1] << 8) + (tab[decalage+2] << 16) + (tab[decalage+3] << 24);
+				info = (tab[decalage+4] << 0) + (tab[decalage+5] << 8) + (tab[decalage+6] << 16) + (tab[decalage+7] << 24);
+				printf("%d : \n",i);
+				printf("\toffset :\t%8x\n",offsetSymb);
+				printf("\tinfo :\t\t%8x\n",info);
+			}
 		}
 	}
 }
