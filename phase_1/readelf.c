@@ -443,7 +443,7 @@ void afficherDetailSection(int * tab, char * para){
 	int tailleRes = (fin_section-i)*2+2;
 	char * res = malloc(sizeof(char)*(tailleRes));
 	while(i<fin_section){
-		tab[i] = tab[i]&0x000000ff;
+		tab[i] = tab[i];
 		char * tmp = malloc(sizeof(char)*2);
 		sprintf(tmp,"%2X",tab[i]);
 		res = strcat(res,tmp);
