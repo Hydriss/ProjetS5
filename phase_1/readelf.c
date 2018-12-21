@@ -567,27 +567,27 @@ void afficherSymbole(int * tab){
 		}
 	}
 	offsetNom = sheader[strTabId].off;
-	printf("%d\n",section);
 	debut_symtab=sheader[section].off;
 	int size=sheader[section].size;
 	fin_symtab=size+debut_symtab;
 
 	symb symboles[size];
+	nb_entree = size/16;
+	printf("\nTable des symboles \".symtab\" contient %d entrees\n\n",nb_entree);
 	getContenueSection(symboles, tab, offsetNom, debut_symtab, size, fin_symtab);
+	printf(" NUM              NOM   VALEUR TAIL             TYPE             LIEN  NDX     VIS \n");
 	for(int i = 0; i < (size/16); i++){
-		printf("\n%d : \n",i);
-		printf("\tnom : \t\t%s",symboles[i].nom);
-		printf("\n\tvaleur : \t%x",symboles[i].valeur);
-		printf("\n\ttail : \t\t%d",symboles[i].tail);
-		printf("\n\ttype : \t\t%s",getSymboleType(symboles[i].type));
-		printf("\n\tlien : \t\t%s",getSymboleLien(symboles[i].lien));
-		printf("\n\tndx : \t\t%d",symboles[i].ndx);
-		printf("\n\tvis : \t\tDEFAULT");
+		printf("[%2d] ",i);
+		printf("%16s ",symboles[i].nom);
+		printf("%8x ",symboles[i].valeur);
+		printf("%4d ",symboles[i].tail);
+		printf("%16s ",getSymboleType(symboles[i].type));
+		printf("%16s ",getSymboleLien(symboles[i].lien));
+		printf("%4d ",symboles[i].ndx);
+		printf("DEFAULT \n");
+
 	}
 	printf("\n");
-
-	nb_entree = size/16;
-	printf("Table des symboles \".symtab\" contient %d entrees\n",nb_entree);
 }
 
 
