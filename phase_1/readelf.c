@@ -457,16 +457,25 @@ void afficherDetailSection(int * tab, char * para){
 	printf("Vidange hexadecimal de la section \"%s\" : \n",sheader[section].nom);
 	int tailleRes = (fin_section-i)*2+2;
 	char * resAff = malloc(sizeof(char)*(tailleRes));
+	char * tmpChar = malloc(sizeof(char)*2);
 	while(i<fin_section){
 		tab[i] = tab[i];
 		char * tmp = malloc(sizeof(char)*2);
 		sprintf(tmp,"%2X",tab[i]);
+		tmpChar[(i - debut_section)] = tab[i];
 		resAff = strcat(resAff,tmp);
 		//printf("%s",res);
 		i++;
 	}
 	for(i = 0; i < tailleRes; i++){
 		if(i%32 == 0){
+			if(i > 0){
+				printf("  ");
+				for(int k = 0; k < 16; k++){
+					char c = tmpChar[(i-1)/32*16 + k];
+					printf("%c",(c >= 0x33 && c < 0x7f)? c : '.');
+				}
+			}
 			printf("\n");
 		}else if(i%8 == 0){
 			printf(" ");
@@ -475,6 +484,15 @@ void afficherDetailSection(int * tab, char * para){
 			resAff[i] = '0';
 		}
 		printf("%c",resAff[i]);
+	}
+	if(i%32 > 0){
+		for(int k = 0;k <((32 - i%32) + 5-((i%32)/8));k++){
+			printf(" ");
+		}
+		printf("  ");
+		for(int k = 0; k < (i%32)/2; k++){
+			printf("%c",tmpChar[(i-1)/32*16 + k]);
+		}
 	}
 	printf("\n");
 }
