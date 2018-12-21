@@ -668,7 +668,26 @@ void test(int * tab){
 				printf("%8x ",offsetSymb);
 				printf("%8x ",info);
 				printf("%16s ", symboles[symbo].nom);
-				printf("%8x\n",type);
+				//printf("%8x\n",type);
+				switch (type) {
+					case 2:
+						printf("  R_ARM_ABS32\n");
+						break;
+					case 5:
+						printf("  R_ARM_ABS16\n");
+						break;
+					case 8:
+						printf("  R_ARM_ABS8\n");
+						break;
+					case 0x1c  :
+						printf("  R_ARM_CALL\n");
+						break;
+					case 0x1d:
+						printf("  R_ARM_JUMP24\n");
+						break;
+					default :
+						printf("  type inconnu\n");
+				}
 			}
 			printf("\n");
 		}
