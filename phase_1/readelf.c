@@ -216,66 +216,64 @@ void afficherEntete(int * tab){
 }
 
 void afficherEnTeteSection(char *nom,int type,char * flags,int adresse,int off,int size,int link,int info,int addralign,int entsize){
-	printf("\t-nom : %s\n",nom);
-	printf("\t-type : ");
+	printf("%16s  ",nom);
 	switch (type) {
 		case  0 :
-			printf("NULL");
+			printf("NULL          ");
 			break;
 		case  1 :
-			printf("PROGBITS" );
+			printf("PROGBITS      ");
 			break;
 		case  2:
-			printf("SYMTAB");
+			printf("SYMTAB        ");
 			break;
 		case  3 :
-			printf("STRTAB");
+			printf("STRTAB        ");
 			break;
 		case  4 :
-			printf("RELA" );
+			printf("RELA          ");
 			break;
 		case  5 :
-			printf("HASH");
+			printf("HASH          ");
 			break;
 		case  6 :
-			printf("DYNAMIC" );
+			printf("DYNAMIC       ");
 			break;
 		case  7 :
-			printf("NOTE");
+			printf("NOTE          ");
 			break;
 		case  8 :
-			printf("NOBITS" );
+			printf("NOBITS        ");
 			break;
 		case  9:
-			printf("REL");
+			printf("REL           ");
 			break;
 		case  10 :
-			printf("SHLIB" );
+			printf("SHLIB         ");
 			break;
 		case  11 :
-			printf("DYNSYM" );
+			printf("DYNSYM        ");
 			break;
 		case  0x70000000 :
-			printf("LOPROC");
+			printf("LOPROC        ");
 			break;
 		case   0x7fffffff  :
-			printf("HIPROC" );
+			printf("HIPROC        ");
 			break;
 		case  0x80000000:
-			printf("LOUSER" );
+			printf("LOUSER        ");
 			break;
 		case  0xffffffff :
-			printf("HIUSER" );
+			printf("HIUSER        ");
 			break;
 		case 0x70000003:
-			printf("ARM_ATTRIBUTES" );
+			printf("ARM_ATTRIBUTES");
 			break;
 		default :
-			printf("type inconnu" );
+			printf("type inconnu  ");
 	}
-	printf("\n\t-flags : %s",flags);
-	printf("\n");
-	printf("\t-adresse: %x\n\t-off: %x\n\t-size: %x\n\t-link: %d\n\t-info: %d\n\t-addralign: %d\n\t-entsize: %d\n",adresse,off,size,link,info,addralign,entsize);
+	printf("   %3s ",flags);
+	printf("%8x %8x %4x %4d %4d      %4d      %4d\n",adresse,off,size,link,info,addralign,entsize);
 }
 
 char * getnom(int offset,int offset_nom,int * tab){
@@ -401,10 +399,10 @@ void afficherSection(int * tab){
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 
+	printf("\t     NOM  TYPE           FLAGS  ADRESSE   OFFSET SIZE LINK INFO ADDRALIGN   ENTSIZE\n");
 	for(int k = 0; k < nbEnTete; k++){
-		printf("nom_offset : %d\n", sheader[k].nom_off);
+		//printf("\nnom_offset : %d\n", sheader[k].nom_off);
 		afficherEnTeteSection(sheader[k].nom,sheader[k].type,sheader[k].flags,sheader[k].adresse,sheader[k].off,sheader[k].size,sheader[k].link,sheader[k].info,sheader[k].addralign,sheader[k].entsize);
-
 	}
 
 }
@@ -609,6 +607,7 @@ void test(int * tab){
 	int section;
 	int debut_symtab;
 	int fin_symtab;
+	int existe = 0;
 
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
@@ -634,24 +633,30 @@ void test(int * tab){
 
 	for(int j = 0; j < nbEnTete; j++){
 		if(strncmp(sheader[j].nom,".rel.",5) == 0){
+			existe = 1;
 			printf("nom : %s\n",sheader[j].nom);
 			int debut;
 			int fin;
 			DetailSection(tab,sheader[j].nom,&debut,&fin);
 			int nbSymb = (fin-debut)/8;
+			printf("\tNUMERO OFFSET     INFO          SYMBOLE     TYPE\n");
 			for(int i = 0; i < nbSymb;i++){
-				printf("%d :\n",i);
+				printf("\t[%d]  ",i);
 				int decalage = debut + i*8;
 				offsetSymb = (tab[decalage] << 0) + (tab[decalage+1] << 8) + (tab[decalage+2] << 16) + (tab[decalage+3] << 24);
 				info = (tab[decalage+4] << 0) + (tab[decalage+5] << 8) + (tab[decalage+6] << 16) + (tab[decalage+7] << 24);
 				symbo = info >> 8;
 				type = (unsigned char)info;
-				printf("\toffset :\t%8x\n",offsetSymb);
-				printf("\tinfo :\t\t%8x\n",info);
-				printf("\tsymb :\t\t%s\n", symboles[symbo].nom);
-				printf("\ttype :\t\t%8x\n",type);
+				printf("%8x ",offsetSymb);
+				printf("%8x ",info);
+				printf("%16s ", symboles[symbo].nom);
+				printf("%8x\n",type);
 			}
+			printf("\n");
 		}
+	}
+	if(!existe){
+		printf("il n'y a pas de relocalisation dans ce fichier\n");
 	}
 }
 
