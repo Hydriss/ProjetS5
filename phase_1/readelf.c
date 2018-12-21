@@ -655,6 +655,12 @@ void test(int * tab){
 					case 2:
 						printf("  R_ARM_ABS32\n");
 						break;
+					case 5:
+						printf("  R_ARM_ABS16\n");
+						break;
+					case 8:
+						printf("  R_ARM_ABS8\n");
+						break;
 					case 0x1c  :
 						printf("  R_ARM_CALL\n");
 						break;
