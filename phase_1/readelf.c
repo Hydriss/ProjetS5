@@ -14,7 +14,7 @@ int lireFichier(int * tab, FILE * ptr, int * taille){
 				return 1;
 			}
 		}
-		printf("%d : %x\n ",i,c);
+		//printf("%d : %x\n ",i,c);
 		tab[i] = c;
 		tab[i] = tab[i] & 0x000000ff;
 		i++;
@@ -374,9 +374,10 @@ void afficherSection(int * tab){
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 
-	printf("\t     NOM  TYPE           FLAGS  ADRESSE   OFFSET SIZE LINK INFO ADDRALIGN   ENTSIZE\n");
+	printf("NUM\t        NOM  TYPE           FLAGS  ADRESSE   OFFSET SIZE LINK INFO ADDRALIGN   ENTSIZE\n");
 	for(int k = 0; k < nbEnTete; k++){
 		//printf("\nnom_offset : %d\n", sheader[k].nom_off);
+		printf("[%d]",k );
 		afficherEnTeteSection(sheader[k].nom,sheader[k].type,sheader[k].flags,sheader[k].adresse,sheader[k].off,sheader[k].size,sheader[k].link,sheader[k].info,sheader[k].addralign,sheader[k].entsize);
 	}
 
