@@ -7,7 +7,7 @@ int lireFichier(int * tab, FILE * ptr, int * taille){
 	while (!feof(ptr)){
 		c = fgetc(ptr);
 		if(i >= *taille){
-			*taille += 10;
+			*taille *= 2;
 			tab = realloc(tab, sizeof(int)*(*taille));
 			if(tab == NULL){
 				printf("erreur de reallocation");
@@ -412,6 +412,9 @@ void DetailSection(int * tab, char * para, int * debut, int * fin) {
 	*fin = size+debut_section;
 }
 
+// uint16_t lisHalf(int *tab, int pos) {
+// 	return ((int) tab[pos])
+// }
 void afficherDetailSection(int * tab, char * para){
 	int debut_section;
 	int i;
@@ -437,7 +440,7 @@ void afficherDetailSection(int * tab, char * para){
 	while(i<fin_section){
 		tab[i] = tab[i];
 		char * tmp = malloc(sizeof(char)*2);
-		sprintf(tmp,"%2X",tab[i]);
+		sprintf(tmp,"%02X",tab[i]);
 		tmpChar[(i - debut_section)] = tab[i];
 		resAff = strcat(resAff,tmp);
 		//printf("%s",res);
