@@ -1,13 +1,14 @@
-#include "readelf.h"
+#include "../phase_1/readelf.h"
+#include "relocation.c"
 
-int findSymbole(char* nom, symb* symbList, int tailleSymbList){
+/*int findSymbole(char* nom, symb* symbList, int tailleSymbList){
   int i;
   for(i = 0; i < tailleSymbList; i++){
-    if(strcomp(symbList[i].nom,nom)){
-      return symbList[i].valeur
+    if(strcmp(symbList[i].nom,nom)){
+      return symbList[i].valeur;
     }
   }
-}
+}*/
 
 int main(int argc, char const *argv[]) {
   int tab[10] = {0,1,2,3,4,5,6,7,8,9};
