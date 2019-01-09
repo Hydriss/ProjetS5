@@ -21,3 +21,17 @@ int tableToDelete(int * tab){
 	}
 
 }
+
+
+int decoupeTab(int * tab, int tailleTab, int offset, int tailleDecoupe){
+  if (offset + tailleDecoupe > tailleTab-1){
+    return tailleTab;
+  }
+  for(int i = 0; i < tailleDecoupe; i++){
+    for(int j =  (offset+i); j < tailleTab; j++){
+         tab[j]= tab[j+1];
+         tailleTab--;
+    }
+  }
+  return tailleTab;
+}
