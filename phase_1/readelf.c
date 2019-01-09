@@ -359,6 +359,7 @@ void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_s
 
 		if (j==e_shstrndx){
 			offset_Sect = sheader[j].off;
+			printf("%d\n",offset_Sect );
 		}
 
 
@@ -373,6 +374,7 @@ void afficherSection(int * tab){
 	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
 	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
 	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+	printf("e_shstrndx : %d\n",e_shstrndx );
 	printf("\n Il y a %d en-tetes de section, debutant à l'adresse de decalage 0x%x\n", nbEnTete, offsetsec);
 	sh sheader[nbEnTete];
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);

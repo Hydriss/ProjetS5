@@ -10,11 +10,29 @@
 }*/
 
 int main(int argc, char const *argv[]) {
-  int tab[10] = {0,1,2,3,4,5,6,7,8,9};
-  int taille = 10;
-  for(int i = 0; i < taille;i++){
-    printf("%d,",tab[i]);
-  }
-    printf("\n");
-  return 0;
+	int taille = 2000;
+	int * tab;
+	if(argc < 3){
+		printf("il manque un nom de fichier");
+	}
+
+	FILE *ptr = malloc(sizeof(FILE));
+	ptr = fopen(argv[1],"r");
+	if (ptr==NULL){
+		printf("Erreur fopen");
+		return -1;
+	}
+
+
+
+	tab = malloc(sizeof(int)*(taille));
+	if(lireFichier(tab,ptr, &taille)){
+		return -1;
+	}
+	afficherSection(tab);
+	tableToDelete(tab,&taille);
+	afficherSection(tab);
+
+
+  	return 0;
 }
