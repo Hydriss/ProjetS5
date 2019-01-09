@@ -16,7 +16,23 @@ int tableToDelete(int * tab){
 	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
 	for (int i=0; i<nbEnTete; i++){
 		if(strncmp(sheader[i].nom,".rel.",5) == 0){
-			sheader[i]= sheader[i+1];
+      for(int j = i; j < nbEnTete; j++){
+			     sheader[j]= sheader[j+1];
+           nbEnTete--;
+      }
 		}
 	}
+}
+
+int decoupeTab(int * tab, int tailleTab, int offset, int tailleDecoupe){
+  if (offset + tailleDecoupe > tailleTab-1){
+    return tailleTab;
+  }
+  for(int i = 0; i < tailleDecoupe; i++){
+    for(int j =  (offset+i); j < tailleTab; j++){
+         tab[j]= tab[j+1];
+         tailleTab--;
+    }
+  }
+  return tailleTab;
 }
