@@ -334,6 +334,7 @@ void getEnTeteSection(sh * sheader, int * tab,int nbEnTete,int offsetsec,int e_s
 	int j;
 	int offset_Sect = 0;
 	for(j=0;j<nbEnTete;j++){
+		sheader[j].offset_debutligne = i;
 		sheader[j].nom = malloc(sizeof(char)*50);
 		sheader[j].nom_off = ((tab[i] << 0) + (tab[i+1] << 8) + (tab[i+2] << 16) + (tab[i+3] << 24));
 		i+=4;
