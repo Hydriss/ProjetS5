@@ -4,5 +4,6 @@
 
 int tableToDelete(int * tab);
 int decoupeTab(int * tab, int tailleTab, int offset, int tailleDecoupe);
+void remplaceParZero(int * tab, int offset, int tailleRemplace);
 
 #endif

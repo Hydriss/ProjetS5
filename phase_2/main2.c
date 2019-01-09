@@ -11,8 +11,8 @@
 
 int main(int argc, char const *argv[]) {
   int tab[10] = {0,1,2,3,4,5,6,7,8,9};
-  int taille;
-  taille = decoupeTab(tab,10,5,2);
+  int taille = 10;
+  remplaceParZero(tab,0,9);
   for(int i = 0; i < taille;i++){
     printf("%d,",tab[i]);
   }

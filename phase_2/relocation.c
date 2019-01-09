@@ -35,3 +35,15 @@ int decoupeTab(int * tab, int tailleTab, int offset, int tailleDecoupe){
   }
   return tailleTab;
 }
+
+void remplaceParZero(int * tab, int offset, int tailleRemplace){
+	for(int i = offset; i < (offset+tailleRemplace);i++){
+		tab[i] = 0;
+	}
+}
+
+void ecrireTabDansFichier(FILE * f, int * tab, int taille){
+	for(int i =0; i < taille; i++){
+		f.putc(char(tab[i]))
+	}
+}
