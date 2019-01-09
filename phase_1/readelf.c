@@ -262,6 +262,7 @@ char * getnom(int offset,int offset_nom,int * tab){
 		i++;
 	}
 	return nom;
+	free(nom);
 }
 
 char * readFlags(int flags) {
@@ -324,6 +325,7 @@ char * readFlags(int flags) {
 		i++;
 	}
 	return res;
+	free(res);
 }
 
 
@@ -379,7 +381,9 @@ void afficherSection(int * tab){
 		//printf("\nnom_offset : %d\n", sheader[k].nom_off);
 		printf("[%d]",k );
 		afficherEnTeteSection(sheader[k].nom,sheader[k].type,sheader[k].flags,sheader[k].adresse,sheader[k].off,sheader[k].size,sheader[k].link,sheader[k].info,sheader[k].addralign,sheader[k].entsize);
+		free(sheader[k].nom);
 	}
+
 
 }
 
@@ -474,6 +478,8 @@ void afficherDetailSection(int * tab, char * para){
 		}
 	}
 	printf("\n");
+	//free(resAff);
+	//free(tmpChar);
 }
 
 char * getSymboleType(int type){
@@ -594,9 +600,131 @@ void afficherSymbole(int * tab){
 }
 
 
-void afficherRelocationTable(int * tab){
-
+int getRelocationTable(int * tab,reloc_section ** preloc_sec,int ** tailleSymbReloc){
 	int offsetSymb;
+	int info;
+	int symbo;
+	int type;
+	int strTabId;
+	int section;
+	int debut_symtab;
+	int fin_symtab;
+	int existe = 0;
+
+	int nbEnTete = ((tab[48] << 0) + (tab[49] << 8));
+	int offsetsec = (tab[32] << 0) + (tab[33] << 8) + (tab[34] << 16) + (tab[35] << 24);
+	int e_shstrndx = ((tab[50] << 0) + (tab[51] << 8));
+
+	sh sheader[nbEnTete];
+	getEnTeteSection(sheader,tab,nbEnTete,offsetsec,e_shstrndx);
+	for(int j = 0; j < nbEnTete; j++){
+		if(!strcmp(sheader[j].nom,".symtab")){
+			section = j;
+		} else if(!strcmp(sheader[j].nom,".strtab")){
+			strTabId = j;
+		}
+	}
+
+	debut_symtab=sheader[section].off;
+	int size=sheader[section].size;
+	int offsetNom = sheader[strTabId].off;
+	fin_symtab=size+debut_symtab;
+
+	symb symboles[size];
+	getContenueSection(symboles, tab, offsetNom, debut_symtab, size, fin_symtab);
+	int nb_RelocSec;
+
+	for(int j = 0; j < nbEnTete; j++){
+		if(strncmp(sheader[j].nom,".rel.",5) == 0){
+			nb_RelocSec++;
+		}
+	}
+	int z = 0;
+	reloc_section * reloc_sec = malloc(sizeof(reloc_section)*nb_RelocSec);
+	int * tabSymb = malloc(sizeof(int)*nb_RelocSec);
+	*tailleSymbReloc = tabSymb;
+	*preloc_sec = reloc_sec;
+	for (int x = 0 ; x<nb_RelocSec; x++){
+		reloc_sec[x].nom = malloc(sizeof(char)*10);
+	}
+	for(int j = 0; j < nbEnTete; j++){
+		if(strncmp(sheader[j].nom,".rel.",5) == 0){
+			existe = 1;
+			reloc_sec[z].nom = sheader[j].nom;
+			int debut;
+			int fin;
+			DetailSection(tab,sheader[j].nom,&debut,&fin);
+			int nbSymb = (fin-debut)/8;
+			tabSymb[z] = nbSymb;
+			for(int i = 0; i < nbSymb;i++){
+				int decalage = debut + i*8;
+				offsetSymb = (tab[decalage] << 0) + (tab[decalage+1] << 8) + (tab[decalage+2] << 16) + (tab[decalage+3] << 24);
+				info = (tab[decalage+4] << 0) + (tab[decalage+5] << 8) + (tab[decalage+6] << 16) + (tab[decalage+7] << 24);
+				symbo = info >> 8;
+				type = (unsigned char)info;
+				reloc_sec[z].vals[i].symbNom = malloc(sizeof(char)*100);
+				reloc_sec[z].vals[i].offsetSymb = offsetSymb;
+				reloc_sec[z].vals[i].info = info;
+				reloc_sec[z].vals[i].type = type;
+				reloc_sec[z].vals[i].symbNom = symboles[symbo].nom;
+			}
+			z++;
+		}
+	}
+	if(!existe){
+		return 0;
+	}
+	return nb_RelocSec;
+}
+
+
+void afficherRelocationTable(int * tab){
+	reloc_section * reloc_Table = NULL;
+	int tailleRelocTable=0;
+	int * tailleSymbReloc = NULL;
+	tailleRelocTable = getRelocationTable(tab,&reloc_Table,&tailleSymbReloc);
+
+	if (tailleRelocTable == 0){
+		printf("Il n'y a pas de relocalisation dans ce fichier.\n");
+		exit(EXIT_SUCCESS);
+	}
+
+	for (int i = 0; i<tailleRelocTable;i++){
+		printf("nom : %s\n",reloc_Table[i].nom);
+		printf("\tNUMERO OFFSET     INFO          SYMBOLE     TYPE\n");
+		for(int x = 0; x < tailleSymbReloc[i];x++){
+			printf("\t[%d]  ",x);
+			printf("%8x ",reloc_Table[i].vals[x].offsetSymb);
+			printf("%8x ",reloc_Table[i].vals[x].info);
+			printf("%16s ", reloc_Table[i].vals[x].symbNom);
+			switch (reloc_Table[i].vals[x].type) {
+				case 2:
+					printf("  R_ARM_ABS32\n");
+					break;
+				case 5:
+					printf("  R_ARM_ABS16\n");
+					break;
+				case 8:
+					printf("  R_ARM_ABS8\n");
+					break;
+				case 0x1c  :
+					printf("  R_ARM_CALL\n");
+					break;
+				case 0x1d:
+					printf("  R_ARM_JUMP24\n");
+					break;
+				default :
+					printf("  type inconnu\n");
+			}
+		}
+		printf("\n");
+		}
+}
+
+
+
+
+/*	int offsetSymb;
 	int info;
 	int symbo;
 	int type;
@@ -674,4 +802,4 @@ void afficherRelocationTable(int * tab){
 	if(!existe){
 		printf("il n'y a pas de relocalisation dans ce fichier\n");
 	}
-}
+	*/

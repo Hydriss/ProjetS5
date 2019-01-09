@@ -29,6 +29,18 @@ typedef struct {
 	int ndx;
 }symb;
 
+typedef struct {
+	char * symbNom;
+	int offsetSymb;
+	int type;
+	int info;
+}reloc;
+
+typedef struct {
+	char * nom;
+	reloc vals[20];
+}reloc_section;
+
 void afficherRelocationTable(int * tab);
 
 void afficherSymbole(int * tab);
