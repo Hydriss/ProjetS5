@@ -19,7 +19,7 @@ int tableToDelete(int * tab){
 			sheader[i]= sheader[i+1];
 		}
 	}
-
+	return 0;
 }
 
 
