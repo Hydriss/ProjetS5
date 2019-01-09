@@ -17,6 +17,7 @@ typedef struct {
 	int info;
 	int addralign;
 	int entsize;
+	int offset_debutligne;
 }sh;
 
 typedef struct {
