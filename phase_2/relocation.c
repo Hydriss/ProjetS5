@@ -28,10 +28,10 @@ int decoupeTab(int * tab, int tailleTab, int offset, int tailleDecoupe){
     return tailleTab;
   }
   for(int i = 0; i < tailleDecoupe; i++){
-    for(int j =  (offset+i); j < tailleTab; j++){
+    for(int j =  (offset); j < tailleTab-1; j++){
          tab[j]= tab[j+1];
-         tailleTab--;
     }
+		tailleTab--;
   }
   return tailleTab;
 }

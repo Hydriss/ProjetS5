@@ -14,7 +14,8 @@ int main(int argc, char const *argv[]) {
   int taille;
   taille = decoupeTab(tab,10,5,2);
   for(int i = 0; i < taille;i++){
-    printf("%d\n",tab[i]);
+    printf("%d,",tab[i]);
   }
+    printf("\n");
   return 0;
 }
